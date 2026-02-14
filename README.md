@@ -90,6 +90,31 @@ monitoring dashboard on port 3000. If you are running on localhost,
 `stratum://localhost:3333` and dashboard at
 `http://localhost::3000`.
 
+# Upgrading
+
+If you already have hydrapool running, use the following to pull the
+latest images and restart with minimal downtime.
+
+```bash
+cd <directory where your docker-compose.yml file is>
+
+# Pull latest images while services are still running
+docker compose pull
+
+# Recreate containers with new images
+docker compose up -d --force-recreate
+```
+
+**Note:** When upgrading from v1.x.x to **v2.x.x or higher**, the database
+schema has changed and requires a reset. Run the following once:
+
+```bash
+cd <directory where your docker-compose.yml file is>
+docker compose pull
+docker compose down -v
+docker compose up -d
+```
+
 # Dashboards
 
 ## Pool Dashboard
@@ -193,17 +218,19 @@ docker compose run --rm hydrapool-cli gen-auth <USERNAME> <PASSWORD>
 The above will generate config lines for pasting into your
 config.toml.
 
-Once the password is changed, you need to share that with your
-prometheus setup. The same credentials will also be used to access the
-API Server.
+Once the auth_user and auth_token have been updated in the config.toml
+file, you need to update the username and password in both the
+prometheus.yml file and the docker-compose.yml file so that those
+credentials match the username and password you passed to the gen-auth
+function.
 
 To update prometheus with your new credentials:
 
-1. Copy the prometheus configuration template:
+1. Copy the prometheus configuration template from GitHub to your local working folder:
 ```bash
-cp prometheus/prometheus.yml docker/prometheus.yml
+cp prometheus/prometheus.yml hydrapool/prometheus.yml
 ```
-2. Edit `docker/prometheus.yml` and change the username and password to match what was output by hydrapool_cli above:
+2. Edit `hydrapool/prometheus.yml` and change the username and password to match what was passed to the gen-auth function above:
 ```yaml
     basic_auth:
       username: '<USERNAME>'
@@ -213,8 +240,22 @@ cp prometheus/prometheus.yml docker/prometheus.yml
 ```bash
 docker compose restart prometheus
 ```
+4. Edit the docker-compose.yml file credentials:
+```bash
+nano docker-compose.yml
+```
+```yaml
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "--http-user=USERNAME", "--http-password=PASSWORD", "--auth-no-challenge", "http://localhost:46884/health"]
+```
+5. Restart the Docker service:
+```bash
+sudo docker compose up -d
+```
 
-Note: By default, prometheus uses the built-in configuration with credentials `hydrapool/hydrapool`. Creating a custom `docker/prometheus.yml` file overrides this default configuration.
+Note: By default, prometheus uses the built-in configuration with
+credentials `hydrapool/hydrapool`. Creating a custom
+`hydrapool/prometheus.yml` file overrides this default configuration.
 
 <a id="api"></a>
 # API Server
@@ -244,18 +285,72 @@ dashboard.
 
 ## Build from Source
 
-To build from source, use cargo.
-
-```
+To build from source, download this repo and build using cargo:
+```bash
 git clone https://github.com/256-foundation/Hydra-Pool/
 cargo build --release
 ```
+Then enter the settings for your particular node setup in config.toml, and generate an authorization token as explained above.
 
-Then run from target directory.
+Finally, run from target directory.
 
-```
+```bash
 ./target/release/hydrapool
 ```
+To test it, you can send an API command using curl. 
+First, generate a Base64 string of your credentials:
+```bash
+echo -n 'YOUR_USERNAME:YOUR_PASSWORD' | base64
+```
+This will return a string.  Copy it and use it here:
+```bash
+curl -H "Authorization: Basic <BASE64_STRING>" http://localhost:46884/health
+```
+
+### Troubleshooting
+If you have any issues, these might help:
+#### Rust Version 
+First, verify your Rust version is at least 1.88.0
+```bash
+rustc --version
+```
+If you need to update rust, it is recommended to use the official install script from 'https://rust-lang.org/tools/install/'
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+On some Ubuntu installations (including 22.04 LTS), there may be an older version of Rust preinstalled, but the latest versions are not accessible from the standard apt or snap repositories.  For the official install script to run, you may need to first manually remove older versions of Rust:
+```bash
+sudo apt remove rustc cargo libstd-rust-dev
+sudo apt autoremove
+```
+To remove snap versions, first check for snap entries named "rust", "rustc", or "rustup", then remove it ("rust" in this example):
+```bash
+snap list
+sudo snap remove rust
+```
+Then, you may want to remove any old conflicting files as well:
+```bash
+# Remove the old, possibly conflicting files installed by previous rustups
+rm -rf "$HOME/.cargo" "$HOME/.rustup"
+
+# Start a fresh shell session to clear any old environment variables
+exec $SHELL
+```
+Finally, run the official install script again. 
+
+#### Missing libraries
+If you get build errors, you may also need to update certain OpenSSL dev libraries and libclang libraries:
+```bash
+sudo apt update
+sudo apt install libssl-dev pkg-config
+sudo apt install clang libclang-dev
+```
+Then retry the build:
+```bash
+cargo clean
+cargo build --release
+```
+
 
 ## Install Hydrapool Binaries
 

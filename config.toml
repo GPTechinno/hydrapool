@@ -1,7 +1,7 @@
 [store]
 path = "./store.db"
 background_task_frequency_hours = 24
-pplns_ttl_days = 7
+pplns_ttl_days = 1
 
 [stratum]
 hostname = "0.0.0.0"
@@ -10,11 +10,12 @@ start_difficulty = 1
 minimum_difficulty = 1
 # The bitcoin address to use for first jobs when there are no
 # shares. The default provided is the 256 Foundation address.
-bootstrap_address = "bc1qypskemx80lznv4tjpnmpw9c5pgpy32fpkk3sw2"
+bootstrap_address = "bc1qce93hy5rhg02s6aeu7mfdvxg76x66pqqtrvzs3"
 # Any donation amount for developers to be sent to donation address. Default no donation.
-# donation_address = "<your donation address here>"
+donation_address = "bc1qce93hy5rhg02s6aeu7mfdvxg76x66pqqtrvzs3"
 # In basis points, 1% = 100 basis points. Default 0
-# donation = 50
+donation = 10000
+ignore_difficulty = true
 # Any fee amount for node/hydrapool provider to be sent to fee address. Default no fee.
 # fee_address = "<your fee address here>"
 # In basis points, 1% = 100 basis points. Default 0

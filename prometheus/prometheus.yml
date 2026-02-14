@@ -13,12 +13,18 @@ scrape_configs:
   - job_name: 'Hydrapool'
 
     # Override the global default and scrape targets from this job every 5 seconds.
-    scrape_interval: 5s
+    scrape_interval: 15s
 
     static_configs:
       - targets: ['host.docker.internal:46884']
+
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: ''
+        action: drop
 
     metrics_path: "/metrics"
     basic_auth:
       username: 'hydrapool'
       password: 'hydrapool'
+

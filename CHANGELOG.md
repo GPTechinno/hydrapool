@@ -7,6 +7,145 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-01-24
+
+### Changed
+
+- Yanked release 2.3.0
+- Bump p2poolv2 to v0.7.0
+
+## [2.3.0] - 2026-01-20 - YANKED
+
+### Changed
+
+- Optimisations for reducing system load
+- Bump p2poolv2 to v0.6.0
+
+
+## [2.2.2] - 2026-01-19
+
+### Changed
+
+- Enable web api for prometheus
+
+## [2.2.1] - 2026-01-19
+
+Bad tag. Ignore.
+
+## [2.2.0] - 2026-01-19
+
+### Changed
+
+- Optimise broadcast of notify messages to clients
+- Clean up inactive users and workers from stats and prometheus exposition
+- Bump p2poolv2 libs to v0.5.0
+
+## [2.1.9] - 2026-01-18
+
+### Fixed
+
+- Support graceful terimation
+- The above helps to remove spikes from grafana dashboard on system restart
+- Bump p2poolv2 libs to v0.4.9
+
+## [2.1.8] - 2026-01-16
+
+### Fixed
+
+- Performance optimisations
+- Bump p2poolv2 libs to v0.4.8
+
+## [2.1.7] - 2026-01-16
+
+### Fixed
+
+- Stop saving chain and pplns shares for now
+- Bump p2poolv2 libs to v0.4.7
+
+
+## [2.1.6] - 2026-01-15
+
+### Fixed
+
+- Increase notify channel capacity to handle concurrent clients
+- Skip PPLNS computations when in 100% donation mode
+- Bump p2poolv2 libs to v0.4.6
+
+## [2.1.5] - 2026-01-15
+
+### Fixed
+
+- Skip PPLNS accounting if donation is at 100%. That enables non
+  addresses as usernames and we avoid any parsing issues with
+  btcaddresses when we allow random usernames.
+- Bump p2poolv2 libs to v0.4.5
+
+## [2.1.4] - 2026-01-15
+
+### Fixed
+
+- Skip address validation if donation is 100%, i.e. we are using
+  hydrapool for a telelhash like event.
+- Bump p2poolv2 libs to v0.4.4
+
+## [2.1.3] - 2026-01-12
+
+### Fixed
+
+- Handle authorize failure using two strike policy is used in ckpool
+- Bump p2poolv2 libs to v0.4.3
+
+## [2.1.2] - 2026-01-12
+
+### Fixed
+
+- Properly pass the testing config option to stratum server
+
+## [2.1.1] - 2026-01-12
+
+### Changed
+
+- Fix share count in grafana dashboard. We now show accepted shares
+  and rejected shares.
+- Bump p2poolv2 libs to v0.4.2
+
+## [2.1.0] - 2026-01-12
+
+### Changed
+
+- Detect duplicate shares submitted by clients and reject them
+- Add support for load testing by ignoring difficulty in test configs
+- Bump p2poolv2 libs to v0.4.1
+
+## [2.0.1] - 2025-12-24
+
+### Changed
+
+- Upgrade cargo dist to using macos-14 on github actions when building
+  release binaries
+
+
+## [2.0.0] - 2025-12-24
+
+### Added
+
+- Show coinbase distribution in grafana dashboard
+- Upgrade to p2poolv2 hydrapool.v0.4.0
+
+### Changed
+
+- BREAKING: Use bitcoin compatible serialisation of shares in
+  database. This requires that you nuke your existing store.db
+  directory and start the server from no data. We want to make this
+  change early before any servers are using Hydrapool at scale. We are
+  not shipping a script to migrate existing data - if you really need
+  it, please reach out to us and we'll try to make it work for
+  you. Ideally, a PR will be welcome too with a script to migrate the
+  rocksdb data.
+- Update README with auth instructions on securing the server
+- Use 256Foundation's address as default mainnet config
+
+
 ## [1.1.18] - 2025-10-31
 
 ### Fixed
@@ -81,8 +220,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add debian package workflow using cargo-deb
 
 [unreleased]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.18...HEAD
-[1.1.16]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.17...v1.1.18
-[1.1.16]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.16...v1.1.17
+[1.1.18]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.17...v1.1.18
+[1.1.17]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.16...v1.1.17
 [1.1.16]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.15...v1.1.16
 [1.1.15]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.14...v1.1.15
 [1.1.14]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.13...v1.1.14
